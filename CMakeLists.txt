@@ -4,11 +4,14 @@ project(swiftnav_piksi)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS diagnostic_updater roscpp sensor_msgs std_srvs std_msgs)
+find_package(catkin REQUIRED COMPONENTS
+  diagnostic_updater 
+  roscpp 
+  sensor_msgs 
+  std_srvs 
+  std_msgs
+  libsbp)
 
-## System dependencies are found with CMake's conventions
-#find_package(swiftnav REQUIRED)
-find_library(SBP sbp)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and scripts declared therein get installed
@@ -63,32 +66,31 @@ include_directories(include
 add_library(piksi
   src/piksi.c
 )
+target_link_libraries(piksi
+  ${catkin_LIBRARIES}
+)
+
+
 add_library(piksi_driver
   src/piksi_driver.cpp
+)
+target_link_libraries(piksi_driver
+  piksi
+  ${catkin_LIBRARIES}
 )
 
 ## Declare a cpp executable
 add_executable(piksi_node src/piksi_node.cpp)
-add_executable(piksitest src/piksi.c)
-
-## Add dependencies to the executable
-# add_dependencies(yei_piksi_node ${PROJECT_NAME})
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(piksi
-  ${SBP}
-)
-target_link_libraries(piksitest
-  ${SBP}
-)
-target_link_libraries(piksi_driver
-  sbp
-  piksi
-)
 target_link_libraries(piksi_node
   piksi_driver
   ${catkin_LIBRARIES}
 )
+
+add_executable(piksitest src/piksi.c)
+target_link_libraries(piksitest
+  ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##
