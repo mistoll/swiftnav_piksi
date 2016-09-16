@@ -12,7 +12,7 @@
 
 namespace swiftnav_piksi
 {	
-	PIKSI::PIKSI( const ros::NodeHandle &_nh,
+	PiksiDriver::PiksiDriver( const ros::NodeHandle &_nh,
 		const ros::NodeHandle &_nh_priv,
 		const std::string _port ) :
 		nh( _nh ),
@@ -61,7 +61,7 @@ namespace swiftnav_piksi
 		rtk_h_accuracy( 0.04 ),     // 4cm
 
 		spin_rate( 2000 ),      // call sbp_process this fast to avoid dropped msgs
-		spin_thread( &PIKSI::spin, this )
+		spin_thread( &PiksiDriver::spin, this )
 	{
 		cmd_lock.unlock( );
 		heartbeat_diag.setHardwareID( "piksi heartbeat" );
@@ -71,25 +71,25 @@ namespace swiftnav_piksi
 		llh_diag.add( llh_pub_freq );
 
 		rtk_diag.setHardwareID( "piksi rtk" );
-		rtk_diag.add( "Piksi Status", this, &PIKSI::DiagCB );
+		rtk_diag.add( "Piksi Status", this, &PiksiDriver::DiagCB );
 		rtk_diag.add( rtk_pub_freq );
 
 		nh_priv.param( "frame_id", frame_id, (std::string)"gps" );
 	}
 
-	PIKSI::~PIKSI( )
+	PiksiDriver::~PiksiDriver( )
 	{
 		spin_thread.interrupt( );
 		PIKSIClose( );
 	}
 
-	bool PIKSI::PIKSIOpen( )
+	bool PiksiDriver::PIKSIOpen( )
 	{
 		boost::mutex::scoped_lock lock( cmd_lock );
 		return PIKSIOpenNoLock( );
 	}
 
-	bool PIKSI::PIKSIOpenNoLock( )
+	bool PiksiDriver::PIKSIOpenNoLock( )
 	{
 		if( piksid >= 0 )
 			return true;
@@ -119,13 +119,13 @@ namespace swiftnav_piksi
 		return true;
 	}
 
-	void PIKSI::PIKSIClose( )
+	void PiksiDriver::PIKSIClose( )
 	{
 		boost::mutex::scoped_lock lock( cmd_lock );
 		PIKSICloseNoLock( );
 	}
 
-	void PIKSI::PIKSICloseNoLock( )
+	void PiksiDriver::PIKSICloseNoLock( )
 	{
 		int8_t old_piksid = piksid;
 		if( piksid < 0 )
@@ -150,7 +150,7 @@ namespace swiftnav_piksi
 		
 		msg_heartbeat_t hb = *(msg_heartbeat_t*) msg;
 
-		class PIKSI *driver = (class PIKSI*) context;
+		PiksiDriver *driver = (PiksiDriver*) context;
 		driver->heartbeat_pub_freq.tick();
 		driver->heartbeat_flags |= (hb.flags & 0x7);    // accumulate errors for diags
 
@@ -165,7 +165,7 @@ namespace swiftnav_piksi
 			return;
 		}
 
-		class PIKSI *driver = (class PIKSI*) context;
+		PiksiDriver *driver = (PiksiDriver*) context;
 
 		msg_gps_time_t time = *(msg_gps_time_t*) msg;
 
@@ -191,7 +191,7 @@ namespace swiftnav_piksi
 			return;
 		}
 
-		class PIKSI *driver = (class PIKSI*) context;
+		PiksiDriver *driver = (PiksiDriver*) context;
 
 		msg_pos_llh_t llh = *(msg_pos_llh_t*) msg;
 
@@ -244,7 +244,7 @@ namespace swiftnav_piksi
 		
 		msg_dops_t dops = *(msg_dops_t*) msg;
 
-		class PIKSI *driver = (class PIKSI*) context;
+		PiksiDriver *driver = (PiksiDriver*) context;
 
 		// FIXME: this is incorrect, but h_accuracy doesn't work yet
 		driver->llh_h_accuracy = dops.hdop;
@@ -262,7 +262,7 @@ namespace swiftnav_piksi
 			return;
 		}
 
-		class PIKSI *driver = (class PIKSI*) context;
+		PiksiDriver *driver = (PiksiDriver*) context;
 
 		msg_baseline_ned_t sbp_ned = *(msg_baseline_ned_t*) msg;
 
@@ -351,7 +351,7 @@ namespace swiftnav_piksi
 			return;
 		}
 
-		class PIKSI *driver = (class PIKSI*) context;
+		PiksiDriver *driver = (PiksiDriver*) context;
 
 		msg_vel_ned_t sbp_vel = *(msg_vel_ned_t*) msg;
 
@@ -365,12 +365,12 @@ namespace swiftnav_piksi
 		return;
 	}
 
-	void PIKSI::spin( )
+	void PiksiDriver::spin( )
 	{
 		while( ros::ok( ) )
 		{
 			boost::this_thread::interruption_point( );
-			PIKSI::spinOnce( );
+			PiksiDriver::spinOnce( );
 			heartbeat_diag.update( );
 			llh_diag.update( );
 			rtk_diag.update( );
@@ -378,7 +378,7 @@ namespace swiftnav_piksi
 		}
 	}
 
-	void PIKSI::spinOnce( )
+	void PiksiDriver::spinOnce( )
 	{
 		int ret;
 
@@ -393,7 +393,7 @@ namespace swiftnav_piksi
 		cmd_lock.unlock( );
 	}
 
-	void PIKSI::DiagCB( diagnostic_updater::DiagnosticStatusWrapper &stat )
+	void PiksiDriver::DiagCB( diagnostic_updater::DiagnosticStatusWrapper &stat )
 	{
 		stat.summary( diagnostic_msgs::DiagnosticStatus::OK, "PIKSI status OK" );
 		boost::mutex::scoped_lock lock( cmd_lock );

@@ -60,13 +60,13 @@ namespace swiftnav_piksi
 	void baseline_ned_callback(u16 sender_id, u8 len, u8 msg[], void *context);
 	void vel_ned_callback(u16 sender_id, u8 len, u8 msg[], void *context);
 
-	class PIKSI
+	class PiksiDriver
 	{
 	public:
-		PIKSI( const ros::NodeHandle &_nh = ros::NodeHandle( ),
+		PiksiDriver( const ros::NodeHandle &_nh = ros::NodeHandle( ),
 			const ros::NodeHandle &_nh_priv = ros::NodeHandle( "~" ),
 			const std::string _port = "/dev/ttyUSB0" );
-		~PIKSI( );
+		~PiksiDriver( );
 		bool PIKSIOpen( );
 		void PIKSIClose( );
 	private:

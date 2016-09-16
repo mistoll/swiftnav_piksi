@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
 	std::string port;
 	nh_priv.param( "port", port, (const std::string)"/dev/ttyUSB0" );
 
-	swiftnav_piksi::PIKSI piksi( nh, nh_priv, port );
+	swiftnav_piksi::PiksiDriver piksi( nh, nh_priv, port );
 
 	ROS_DEBUG( "Opening Piksi on %s", port.c_str( ) );
 	if( !piksi.PIKSIOpen( ) )
