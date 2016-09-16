@@ -86,12 +86,6 @@ target_link_libraries(piksi_node
   ${catkin_LIBRARIES}
 )
 
-add_executable(piksitest src/piksi.c)
-target_link_libraries(piksitest
-  ${catkin_LIBRARIES}
-)
-
-
 #############
 ## Install ##
 #############
@@ -104,7 +98,7 @@ target_link_libraries(piksitest
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS piksi piksi_driver piksi_node piksitest
+install(TARGETS piksi piksi_driver piksi_node
 # ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

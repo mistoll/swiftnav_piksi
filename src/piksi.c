@@ -225,8 +225,3 @@ void piksi_close( const int8_t piksid )
 	return;
 }
 
-int main()
-{
-	return 0;
-}
-
