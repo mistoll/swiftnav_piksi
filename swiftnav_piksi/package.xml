@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <name>swiftnav_piksi</name>
+  <version>0.0.0</version>
+  <description>Metapackage containing piksi_driver and piksi_tutorials</description>
+
+  <maintainer email="michael.stoll@stolltec.com">Michael Stoll</maintainer>
+  
+  <license>BSD</license>
+
+  <url type="website">http://wiki.ros.org/swiftnav_piksi</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>piksi_driver</run_depend>
+  <run_depend>piksi_tutorial</run_depend>
+  
+  <export>
+   <metapackage />
+ </export>
+</package>
