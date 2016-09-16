@@ -31,11 +31,12 @@ namespace swiftnav_piksi
 
 	PiksiDriver::PiksiDriver( const ros::NodeHandle &_nh,
 		const ros::NodeHandle &_nh_priv,
-		const std::string _port ) :
+		const std::string & _port,
+		const std::string & _frame_id) :
 		nh( _nh ),
 		nh_priv( _nh_priv ),
 		port( _port ),
-		frame_id( "gps" ),
+		frame_id( _frame_id ),
 		piksid( -1 ),
 
 		heartbeat_diag(nh, nh_priv, "ppiksi_time_diag"),
@@ -90,8 +91,6 @@ namespace swiftnav_piksi
 		rtk_diag.setHardwareID( "piksi rtk" );
 		rtk_diag.add( "Piksi Status", this, &PiksiDriver::DiagCB );
 		rtk_diag.add( rtk_pub_freq );
-
-		nh_priv.param( "frame_id", frame_id, (std::string)"gps" );
 	}
 
 	PiksiDriver::~PiksiDriver( )
