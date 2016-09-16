@@ -48,6 +48,7 @@
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <diagnostic_updater/publisher.h>
 #include <diagnostic_updater/update_functions.h>
+#include <piksi_driver/Raw.h>
 
 #include <boost/thread.hpp>
 
@@ -59,7 +60,9 @@ namespace swiftnav_piksi
 		PiksiDriver( const ros::NodeHandle &_nh = ros::NodeHandle( ),
 			const ros::NodeHandle &_nh_priv = ros::NodeHandle( "~" ),
 			const std::string & _port = "/dev/ttyUSB0",
-			const std::string & _frame_id = "gps");
+			const std::string & _frame_id = "gps",
+			u16 publish_raw_msg_mask_ = 0,
+			bool subscribe_observation_data = false);
 		~PiksiDriver( );
 		bool PIKSIOpen( );
 		void PIKSIClose( );
@@ -89,7 +92,18 @@ namespace swiftnav_piksi
 		boost::mutex cmd_lock;
 
 		sbp_state_t state;
-		sbp_msg_callbacks_node_t callback_nodes_[6];
+		sbp_msg_callbacks_node_t callback_nodes_[10];
+
+		/*
+		 * Observations
+		 */
+		bool subscribe_observation_data_;
+		u16 publish_raw_msg_mask_;
+
+		ros::Publisher raw_pub;
+		ros::Subscriber raw_sub;
+
+		void rawRosMsgCallback(const piksi_driver::RawConstPtr & msg);
 
 		/*
 		 * Diagnostic updater

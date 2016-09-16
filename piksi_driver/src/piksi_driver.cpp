@@ -1,6 +1,7 @@
 #include "swiftnav_piksi/piksi_driver.h"
 #include <libsbp/system.h>
 #include <libsbp/navigation.h>
+#include <libsbp/observation.h>
 
 #include <iomanip>
 
@@ -32,7 +33,9 @@ namespace swiftnav_piksi
 	PiksiDriver::PiksiDriver( const ros::NodeHandle &_nh,
 		const ros::NodeHandle &_nh_priv,
 		const std::string & _port,
-		const std::string & _frame_id) :
+		const std::string & _frame_id,
+		u16 publish_raw_msg_mask,
+		bool subscribe_observation_data) :
 		nh( _nh ),
 		nh_priv( _nh_priv ),
 		port( _port ),
@@ -82,7 +85,10 @@ namespace swiftnav_piksi
 		rtk_vel_up( 0.0 ),
 
 		spin_rate( 2000 ),      // call sbp_process this fast to avoid dropped msgs
-		spin_thread( &PiksiDriver::spin, this )
+		spin_thread( &PiksiDriver::spin, this ),
+
+		publish_raw_msg_mask_( publish_raw_msg_mask ),
+		subscribe_observation_data_( subscribe_observation_data )
 	{
 		cmd_lock.unlock( );
 		heartbeat_diag.setHardwareID( "piksi heartbeat" );
@@ -134,6 +140,21 @@ namespace swiftnav_piksi
 		llh_pub = nh.advertise<sensor_msgs::NavSatFix>( "gps/fix", 1 );
 		rtk_pub = nh.advertise<nav_msgs::Odometry>( "gps/rtkfix", 1 );
 		time_pub = nh.advertise<sensor_msgs::TimeReference>( "gps/time", 1 );
+
+
+		if (publish_raw_msg_mask_ != 0) {
+			raw_pub = nh.advertise<piksi_driver::Raw>( "gps/raw", 5);
+
+			// Observation data
+			sbp_register_callback(&state, SBP_MSG_OBS_DEP_B, &swiftnav_piksi::sbpCallback<SBP_MSG_OBS_DEP_B>, (void*) this, &callback_nodes_[6]);
+			sbp_register_callback(&state, SBP_MSG_EPHEMERIS_DEP_C, &swiftnav_piksi::sbpCallback<SBP_MSG_EPHEMERIS_DEP_C>,this, &callback_nodes_[7]);
+			sbp_register_callback(&state, SBP_MSG_BASE_POS_LLH, &swiftnav_piksi::sbpCallback<SBP_MSG_BASE_POS_LLH>, this, &callback_nodes_[8]);
+			sbp_register_callback(&state, SBP_MSG_BASE_POS_ECEF, &swiftnav_piksi::sbpCallback<SBP_MSG_BASE_POS_ECEF>, this, &callback_nodes_[9]);
+		}
+
+		if (subscribe_observation_data_) {
+			raw_sub = nh.subscribe("gps/raw", 5, &PiksiDriver::rawRosMsgCallback, this);
+		}
 
 		return true;
 	}
@@ -247,9 +268,31 @@ namespace swiftnav_piksi
 		stat.add( "GPS lat/lon horizontal accuracy (m)", llh_h_accuracy);
 	}
 
+	void PiksiDriver::rawRosMsgCallback(const piksi_driver::RawConstPtr& msg) {
+
+		size_t size = msg->payload.size();
+		const u8* payload = static_cast<const u8*>(&(msg->payload[0]));
+
+		s8 res = sbp_send_message(&state, msg->msg_type, msg->sender_id, size, (u8*)payload, &send_cmd);
+		if (res != SBP_OK)
+			ROS_ERROR("Failed to send observation message to piksi. Code: %d", res);
+	}
+
 
 	void PiksiDriver::sbpCallback(u16 msg_type, u16 sender_id, u8 len, u8 msg[])
 	{
+		// Publish raw?
+		if ((msg_type & publish_raw_msg_mask_) != 0) {
+			piksi_driver::RawPtr raw(new piksi_driver::Raw());
+
+			raw->sender_id = sender_id;
+			raw->msg_type = msg_type;
+			std::vector<u8> payload_vector(msg, msg + len);
+			raw->payload.swap(payload_vector);
+
+			raw_pub.publish(raw);
+		}
+
 		switch (msg_type) {
 		case SBP_MSG_HEARTBEAT:
 		{
