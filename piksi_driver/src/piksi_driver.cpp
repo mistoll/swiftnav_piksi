@@ -77,6 +77,9 @@ namespace swiftnav_piksi
 		rtk_east( 0.0 ),
 		rtk_height( 0.0 ),
 		rtk_h_accuracy( 0.04 ),     // 4cm
+		rtk_vel_east( 0.0 ),
+		rtk_vel_north( 0.0 ),
+		rtk_vel_up( 0.0 ),
 
 		spin_rate( 2000 ),      // call sbp_process this fast to avoid dropped msgs
 		spin_thread( &PiksiDriver::spin, this )
