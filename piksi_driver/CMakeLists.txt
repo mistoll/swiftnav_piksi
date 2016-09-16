@@ -5,10 +5,10 @@ project(piksi_driver)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  diagnostic_updater 
-  roscpp 
-  sensor_msgs 
-  std_srvs 
+  diagnostic_updater
+  roscpp
+  sensor_msgs
+  nav_msgs
   std_msgs
   libsbp)
 
@@ -49,7 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
    INCLUDE_DIRS include
    LIBRARIES piksi piksi_driver
-   CATKIN_DEPENDS diagnostic_updater roscpp sensor_msgs std_srvs
+   CATKIN_DEPENDS diagnostic_updater roscpp sensor_msgs nav_msgs
 #  DEPENDS system_lib
 )
 

@@ -43,13 +43,11 @@
 
 #include <libsbp/sbp.h>
 
-#include <ros/ros.h>
+#include <ros/node_handle.h>
 #include <ros/rate.h>
-#include <tf/tf.h>
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <diagnostic_updater/publisher.h>
 #include <diagnostic_updater/update_functions.h>
-#include <nav_msgs/Odometry.h>
 
 #include <boost/thread.hpp>
 

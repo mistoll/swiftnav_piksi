@@ -7,8 +7,8 @@
 #include <sensor_msgs/NavSatFix.h>
 #include <sensor_msgs/NavSatStatus.h>
 #include <sensor_msgs/TimeReference.h>
+#include <nav_msgs/Odometry.h>
 #include <ros/time.h>
-#include <tf/tf.h>
 
 namespace swiftnav_piksi
 {	
