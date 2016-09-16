@@ -53,13 +53,6 @@
 
 namespace swiftnav_piksi
 {
-	void heartbeat_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-	void time_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-	void pos_llh_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-	void dops_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-	void baseline_ned_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-	void vel_ned_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-
 	class PiksiDriver
 	{
 	public:
@@ -95,12 +88,7 @@ namespace swiftnav_piksi
 		boost::mutex cmd_lock;
 
 		sbp_state_t state;
-		sbp_msg_callbacks_node_t heartbeat_callback_node;
-		sbp_msg_callbacks_node_t time_callback_node;
-		sbp_msg_callbacks_node_t pos_llh_callback_node;
-		sbp_msg_callbacks_node_t dops_callback_node;
-		sbp_msg_callbacks_node_t baseline_ned_callback_node;
-		sbp_msg_callbacks_node_t vel_ned_callback_node;
+		sbp_msg_callbacks_node_t callback_nodes_[6];
 
 		/*
 		 * Diagnostic updater
@@ -157,12 +145,9 @@ namespace swiftnav_piksi
 		ros::Rate spin_rate;
 		boost::thread spin_thread;
 
-		friend void heartbeat_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-		friend void time_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-		friend void pos_llh_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-		friend void dops_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-		friend void baseline_ned_callback(u16 sender_id, u8 len, u8 msg[], void *context);
-		friend void vel_ned_callback(u16 sender_id, u8 len, u8 msg[], void *context);
+		void sbpCallback(u16 msg_type, u16 sender_id, u8 len, u8 msg[]);
+		template <int MSG_TYPE>
+		friend void sbpCallback(u16 sender_id, u8 len, u8 msg[], void *context);
 	};
 }
 
