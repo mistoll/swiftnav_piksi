@@ -99,12 +99,9 @@ namespace swiftnav_piksi
 		sbp_state_t state;
 		sbp_msg_callbacks_node_t heartbeat_callback_node;
 		sbp_msg_callbacks_node_t time_callback_node;
-//		sbp_msg_callbacks_node_t pos_ecef_callback_node;
 		sbp_msg_callbacks_node_t pos_llh_callback_node;
 		sbp_msg_callbacks_node_t dops_callback_node;
-//		sbp_msg_callbacks_node_t baseline_ecef_callback_node;
 		sbp_msg_callbacks_node_t baseline_ned_callback_node;
-//		sbp_msg_callbacks_node_t vel_ecef_callback_node;
 		sbp_msg_callbacks_node_t vel_ned_callback_node;
 
 		/*
@@ -118,10 +115,10 @@ namespace swiftnav_piksi
 		 */
 		double min_llh_rate;
 		double max_llh_rate;
-        double min_rtk_rate;
-        double max_rtk_rate;
-        double min_heartbeat_rate;
-        double max_heartbeat_rate;
+		double min_rtk_rate;
+		double max_rtk_rate;
+		double min_heartbeat_rate;
+		double max_heartbeat_rate;
 
 		/*!
 		 * \brief Diagnostic rate for gps/rtk publication
@@ -134,30 +131,30 @@ namespace swiftnav_piksi
 		ros::Publisher rtk_pub;
 		ros::Publisher time_pub;
 
-        // Diagnostic Data
+		// Diagnostic Data
 		unsigned int io_failure_count;
 		unsigned int last_io_failure_count;
 		unsigned int open_failure_count;
 		unsigned int last_open_failure_count;
-        unsigned int heartbeat_flags;       //!< Flags from heartbeat msg
+		unsigned int heartbeat_flags;       //!< Flags from heartbeat msg
 
-        unsigned int num_llh_satellites;   //!< Number of satellites used in llh soln
-        unsigned int llh_status;           //!< Flags from POS_LLH message - bit 0: rtk
-        double llh_lat;
-        double llh_lon;
-        double llh_height;
-        double llh_h_accuracy;
-        double hdop;
+		unsigned int num_llh_satellites;   //!< Number of satellites used in llh soln
+		unsigned int llh_status;           //!< Flags from POS_LLH message - bit 0: rtk
+		double llh_lat;
+		double llh_lon;
+		double llh_height;
+		double llh_h_accuracy;
+		double hdop;
 
-        unsigned int num_rtk_satellites;   //!< Number of satellites used in rtk soln
-        unsigned int rtk_status;           //!< Flags from BASELINE_NED message
-        double rtk_north;
-        double rtk_east;
-        double rtk_height;
-        double rtk_h_accuracy;
-        double rtk_vel_north;
-        double rtk_vel_east;
-        double rtk_vel_up;
+		unsigned int num_rtk_satellites;   //!< Number of satellites used in rtk soln
+		unsigned int rtk_status;           //!< Flags from BASELINE_NED message
+		double rtk_north;
+		double rtk_east;
+		double rtk_height;
+		double rtk_h_accuracy;
+		double rtk_vel_north;
+		double rtk_vel_east;
+		double rtk_vel_up;
 
 		ros::Rate spin_rate;
 		boost::thread spin_thread;
