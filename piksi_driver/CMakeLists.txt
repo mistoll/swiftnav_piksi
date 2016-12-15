@@ -65,7 +65,6 @@ target_link_libraries(piksi
   ${catkin_LIBRARIES}
 )
 
-
 add_library(piksi_driver
   src/piksi_driver.cpp
 )
@@ -73,6 +72,7 @@ target_link_libraries(piksi_driver
   piksi
   ${catkin_LIBRARIES}
 )
+add_dependencies(piksi_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a cpp executable
 add_executable(piksi_node src/piksi_node.cpp)
@@ -80,6 +80,7 @@ target_link_libraries(piksi_node
   piksi_driver
   ${catkin_LIBRARIES}
 )
+add_dependencies(piksi_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
